@@ -1,0 +1,174 @@
+#!/usr/bin/python3
+
+import math
+import sys
+from typing import List
+
+
+
+def cipher():
+
+    def usage():
+        print("USAGE")
+        print("\t./103cipher message key flag\n")
+        print("DESCRIPTION")
+        print("\tmessage\ta message, made of ASCII characters")
+        print("\tkey\tthe encryption key, made of ASCII characters")
+        print("\tflag\t0 for the message to be encrypted, 1 to be decrypted")
+
+
+    def is_valid_string(argument):
+        try:
+            int(argument)
+        except ValueError:
+            return False
+        else:
+            return True
+    
+
+    def multiply_matrices(matrix1, matrix2):
+        # Check if the matrices can be multiplied
+        if len(matrix1[0]) != len(matrix2):
+          print("Matrices cannot be multiplied")
+          return
+
+        result = []
+
+        for i in range(len(matrix1)):
+            row = []
+            for j in range(len(matrix2[0])):
+            # Initialize the sum
+                sum = 0
+            # Iterate over the rows of matrix2
+                for k in range(len(matrix2)):
+              # Multiply the elements and add them to the sum
+                    sum += matrix1[i][k] * matrix2[k][j]
+            # Add the sum to the row
+                row.append(sum)
+          # Add the row to the result matrix
+            result.append(row)
+
+        # Return the result matrix
+        return result
+
+    def smallest_squarematrix(s: str) -> List[List[int]]:
+        # Determine the size of the square matrix
+        n = len(s)
+        size = int(math.ceil(math.sqrt(n)))
+        # Initialize the matrix
+        matrix = [[0 for _ in range(size)] for _ in range(size)]
+        # Add each character to the matrix
+        for i, c in enumerate(s):
+            matrix[i // size][i % size] = ord(c)
+        # Return the matrix
+        print("Key matrix:")
+        for row in matrix:
+            for num in row:
+                print(num, end='\t')
+            print()
+        print()
+        return matrix
+
+    def encrypt(message, key):
+        matrix = smallest_squarematrix(key)
+        message_ascii = [ord(c) for c in message]
+        message_matrix = []
+        for i in range(0, len(message_ascii), len(matrix[0])):
+            message_matrix.append(message_ascii[i:i+len(matrix[0])])
+        for row in message_matrix:
+            if len(row) < len(matrix[0]):
+                zeros_to_append = len(matrix[0]) - len(row)
+                for zeros in range(zeros_to_append):
+                    message_matrix[len(message_matrix)-1].append(0)
+        result_matrix = multiply_matrices(message_matrix, matrix)
+        print("Encrypted message:")
+        for row in result_matrix:
+            for col in row:
+                print(col, end=' ')
+        print()
+
+    def get_minor(matrix, row, col):
+        return [row[:col] + row[col + 1:] for row in matrix[1:]]
+
+    def determinant(matrix):
+        if len(matrix) == 1:
+            return matrix[0][0]
+        elif len(matrix) == 2:
+            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
+        else:
+            det = 0
+            for i in range(len(matrix)):
+                det += (-1) ** i * matrix[0][i] * determinant(get_minor(matrix, 0, i))
+            return det
+ 
+    def inverse(a):
+        n = len(a)
+        a = a + [[0] * n for _ in range(n)]
+        for i in range(n):
+            a[i][i] += 1
+        for i in range(n):
+            for j in range(n):
+                if i != j:
+                    c = a[j][i] / a[i][i]
+                    for k in range(n):
+                        a[j][k] -= c * a[i][k]
+        for i in range(n):
+            c = a[i][i]
+            for j in range(n):
+                a[i][j] /= c
+        return [a[i][n:n + n] for i in range(n)]
+        #Step 1: Put the key into a matrix with the min dimensions
+        
+
+    def decrypt(message, key):
+      message_matrix = []
+      for i in range(0, len(message), len(key[0])):
+        message_matrix.append(message[i:i+len(key[0])])
+
+      matrix = smallest_squarematrix(key)  
+      print(matrix)
+
+      key_inv = np.linalg.inv(matrix)
+      print(key_inv)
+    
+      result_matrix = multiply_matrices(message_matrix, key_inv)
+      print(result_matrix)
+
+      result = ""
+      for row in result_matrix:
+        for col in row:
+          result += chr(col)
+      # Return the decrypted message
+      print(result)
+      return result
+
+
+    if  len(sys.argv) == 1:
+        return(84)
+    else:
+        args = len(sys.argv)
+
+    if sys.argv[1] == "-h":
+        usage()
+        exit(0)
+    elif args != 4:
+        return 84
+    elif not sys.argv[2]:
+        return 84
+    elif sys.argv[3] != "0" and sys.argv[3] != "1":
+        return 84
+  
+
+    message = sys.argv[1]
+    key = sys.argv[2]
+    operation = sys.argv[3]
+
+    if operation == "0":
+        encrypt(message, key)
+    elif operation == "1":
+        decrypt(message, key)
+    else:
+        return(84)
+    
+
+cipher()

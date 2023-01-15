@@ -1,0 +1,232 @@
+#!/usr/bin/python3
+
+import math
+import sys
+from typing import List
+
+def intersection():
+
+    def solve_quadratic(a, b, c): #returns solutions --> 2, 1 or 0
+        discriminant = b**2 - 4*a*c
+        if discriminant > 0:
+            # Two real solutions
+            x1 = (-b + math.sqrt(discriminant)) / (2*a)
+            x2 = (-b - math.sqrt(discriminant)) / (2*a)
+            return x1, x2
+        elif discriminant == 0:
+            # One real solution (a double root)
+            x = -b / (2*a)
+            return x,
+        else:
+            # No real solutions (complex roots)
+            return
+    def return_coordinates_line(vector, point, time):
+        i = 0;
+        for _ in vector:
+            position = [vector[i] + time*point[i]]
+            i + 1
+    
+    def intersect_line_sphere(P, D, r):
+  # Solve the quadratic equation to find the values of t
+  # Subtitue the line equations into the sphere equtions 
+  # agrupate in grpups (a, b, c)
+        a = D[0]*D[0] + D[1]*D[1] + D[2]*D[2]
+        b = 2 * (D[0]*P[0] + D[1]*P[1] + D[2]*P[2])
+        c = P[0]*P[0] + P[1]*P[1] + P[2]*P[2] - r**2
+
+        discriminant = b*b - 4*a*c
+        
+
+        if discriminant < 0:
+            intersection = None
+        elif discriminant == 0:
+            t = -b / (2*a)
+            x = P[0] + t*D[0]
+            y = P[1] + t*D[1]
+            z = P[2] + t*D[2]
+            intersection = [(x, y, z)]
+        else:
+            t1 = (-b + math.sqrt(discriminant)) / (2*a)
+            t2 = (-b - math.sqrt(discriminant)) / (2*a)
+        
+            x1 = P[0] + t1*D[0]
+            y1 = P[1] + t1*D[1]
+            z1 = P[2] + t1*D[2]
+            x2 = P[0] + t2*D[0]
+            y2 = P[1] + t2*D[1]
+            z2 = P[2] + t2*D[2]
+        
+            intersection = [(x1, y1, z1), (x2, y2, z2)]
+
+        P = tuple([int(x) for x in P])
+        D = tuple([int(x) for x in D])
+        print('Sphere of radius', r)
+        print('Line passing through the point',P, 'and parallel to the vector', D)
+        if intersection != None:
+            if len(intersection) > 1:
+                print('2 intersection points:\n')
+                point1 = intersection[0]
+                point2 = intersection[1]
+                print("({:.3f}, {:.3f}, {:.3f})".format(point1[0], point1[1], point1[2]))
+                print("({:.3f}, {:.3f}, {:.3f})".format(point2[0], point2[1], point2[2]))
+            else:
+                print('1 intersection point:')
+                point1 = intersection[0]
+                print("({:.3f}, {:.3f}, {:.3f})".format(point1[0], point1[1], point1[2]))
+
+        else:
+            print('No intersection point.')
+        return 0
+
+
+    def find_cone_line_intersection(point, vector, angle):
+
+        angle_rad = math.radians(angle)
+        line_dir = (vector[0] / math.sqrt(vector[0]**2 + vector[1]**2 + vector[2]**2),
+                    vector[1] / math.sqrt(vector[0]**2 + vector[1]**2 + vector[2]**2),
+                    vector[2] / math.sqrt(vector[0]**2 + vector[1]**2 + vector[2]**2))
+        cos_theta = line_dir[0] * 0 + line_dir[1] * 0 + line_dir[2] * 1
+        theta = math.acos(cos_theta)
+
+        #problem with theta and angle
+        print(line_dir)
+        print(abs(theta))
+        print(angle_rad / 2)
+
+        if abs(theta) > angle_rad / 2:
+            intersection = None
+        elif abs(theta) == angle_rad / 2:
+            t = math.tan(angle_rad / 2) * point[2] / math.sin(theta)
+            intersection = [point + t * line_dir]
+        else:
+            t1 = (point[2] + math.sqrt(point[2]**2 - 4 * point[0]**2 * math.tan(angle_rad / 2)**2)) / (2 * point[0] * math.tan(angle_rad / 2))
+            t2 = (point[2] - math.sqrt(point[2]**2 - 4 * point[0]**2 * math.tan(angle_rad / 2)**2)) / (2 * point[0] * math.tan(angle_rad / 2))
+            intersection1 = [point[i] + t1 * line_dir[i] for i in range(3)]
+            intersection2 = [point[i] + t2 * line_dir[i] for i in range(3)]
+            intersection = [intersection1, intersection2]
+
+        point = tuple([int(x) for x in point])
+        vector = tuple([int(x) for x in vector])
+        print('Cone with a', angle , 'degree angle')
+        print('Line passing through the point', point, 'and parallel to the vector', vector)
+        if intersection != None:
+            if len(intersection) > 1:
+                print('2 intersection points:')
+                point1 = intersection[0]
+                point2 = intersection[1]
+                print("({:.3f}, {:.3f}, {:.3f})".format(point1[0], point1[1], point1[2]))
+                print("({:.3f}, {:.3f}, {:.3f})".format(point2[0], point2[1], point2[2]))
+            else:
+                print('1 intersection point:')
+                point1 = intersection[0]
+                print("({:.3f}, {:.3f}, {:.3f})".format(point1[0], point1[1], point1[2]))
+        else:
+            print('No intersection point.')
+        return 0
+    
+    def intersect_line_cylinder(P, D, r):
+
+        infinite = False
+        a = D[0]**2 + D[1]**2
+        b = 2 * (D[0]*P[0] + D[1]*P[1])
+        c = P[0]**2 + P[1]**2 - r**2
+
+        discriminant = b**2 - 4*a*c
+
+        if discriminant < 0:
+            intersection = None
+        elif discriminant == 0:
+            if (2*a) == 0:
+                infinite = True;
+                P = tuple([int(x) for x in P])
+                D = tuple([int(x) for x in D])
+                print('Cylinder of radius', r)
+                print('Line passing through the point', P, 'and parallel to the vector', D)
+                print("There is an infinite number of intersection points.")
+                return(0)
+            t = -b / (2*a)
+            x = P[0] + t*D[0]
+            y = P[1] + t*D[1]
+            z = P[2] + t*D[2]
+            intersection = [(x, y, z)]
+        else:
+            t1 = (-b + math.sqrt(discriminant)) / (2*a)
+            t2 = (-b - math.sqrt(discriminant)) / (2*a)
+            x1 = P[0] + t1*D[0]
+            y1 = P[1] + t1*D[1]
+            z1 = P[2] + t1*D[2]
+            x2 = P[0] + t2*D[0]
+            y2 = P[1] + t2*D[1]
+            z2 = P[2] + t2*D[2]
+            intersection = [(x1, y1, z1), (x2, y2, z2)]
+        
+        P = tuple([int(x) for x in P])
+        D = tuple([int(x) for x in D])
+        print('Cylinder of radius', r)
+        print('Line passing through the point', P, 'and parallel to the vector', D)
+        if intersection != None:
+            if len(intersection) > 1:
+                print('2 intersection points:')
+                point1 = intersection[0]
+                point2 = intersection[1]
+                print("({:.3f}, {:.3f}, {:.3f})".format(point1[0], point1[1], point1[2]))
+                print("({:.3f}, {:.3f}, {:.3f})".format(point2[0], point2[1], point2[2]))
+            else:
+                print('1 intersection point:')
+                point1 = intersection[0];
+                print("({:.3f}, {:.3f}, {:.3f})".format(point1[0], point1[1], point1[2]))
+        else:
+            print('No intersection point.')
+        return 0
+
+
+
+    # error handling
+    argc = len(sys.argv)
+    ## no arguments
+    if argc <= 1:
+        exit(84)
+    ##no enough arguments
+    if argc < 9:
+        exit(84)
+    ## to menny argumetns 
+    if argc > 9:
+        exit(84)
+#
+    ##bad option
+    if int(sys.argv[1]) not in [1, 2, 3]:
+        exit(84)
+#
+    ##chech for invalid arguments
+    for num in sys.argv[1:]:
+        try:
+            int(num)
+        except ValueError:
+            exit(84)
+#
+    ##bad radius
+#
+    ##incorrect angle
+    if int(sys.argv[1]) == 3 and int(sys.argv[8]) > 180:
+        exit(84)
+    #Maybe need to change something
+    if int(sys.argv[1]) == 3 and int(sys.argv[8]) < 0:
+        exit(84)
+
+    ##null vecotr (norm == 0)
+    if math.sqrt(int(sys.argv[5])**2 + int(sys.argv[6])**2 + int(sys.argv[7])**2) == 0:
+        exit(84)
+    
+    shape = int(sys.argv[1])
+    point = (round(float(sys.argv[2]), 3), round(float(sys.argv[3]), 3), round(float(sys.argv[4]), 3))
+    vector = (round(float(sys.argv[5]), 3),round(float(sys.argv[6]), 3), round(float(sys.argv[7]), 3))
+    param = int(sys.argv[8])
+
+    if (shape == 1):
+        intersect_line_sphere(point, vector, param)
+    if (shape == 2):
+        intersect_line_cylinder(point, vector, param)
+    if (shape == 3):
+        find_cone_line_intersection(point, vector, param)
+
+intersection()
